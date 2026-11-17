@@ -1,6 +1,6 @@
 {
   "name": "dsh-ai-os",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "AI OS for DeepSeek Harness: replace mouse and keyboard with your voice. Press F8, speak, and the agent operates the Windows desktop through UI Automation and answers aloud.",
   "type": "module",
   "main": "lib/index.js",

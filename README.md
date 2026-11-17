@@ -83,6 +83,30 @@ https://cdn.jsdelivr.net/npm/dsh-ai-os/market-index.json
 
 语音识别复用 DeepSeek Harness 官方的**语音输入**插件（实验功能），无需另外配置 API Key：在侧栏**插件**中打开它，并按提示完成一次模型准备即可。插件页的「运行检查」会实地读取 MCP 状态：桌面工具连不上时这一行会变红并给出具体原因，不会假装正常。
 
+## 后台常驻：不打开 DeepSeek Harness 也能用
+
+```sh
+ai-os service start      # 启动后台助手
+ai-os service enable     # 可选：登录 Windows 后自动启动
+```
+
+之后在任何程序里按 **Ctrl+Alt+Space** 说话即可，DeepSeek Harness 的窗口不需要开着。按 **Ctrl+Alt+Esc** 随时停止：正在听、正在执行、正在朗读都会立刻停下，回到待命；朗读时再按 Ctrl+Alt+Space 则是打断并重新听。屏幕顶部的状态条只在工作时出现；说完后几秒内可以接着说，同一段对话会记住上下文（“把它关掉”知道“它”是什么）。
+
+- **语音识别在本地完成**：直接复用 DeepSeek Harness「语音输入」插件下载的 SenseVoice 模型，声音不上传。需要先在 DSH 里启用一次「语音输入」并完成模型准备。
+- **不需要另配 API Key**：任务交给 `dsh --profile headless` 执行，用的是你在 DeepSeek Harness 桌面版里登录的账号。你自己的 DSH 配置不会被修改。
+- **默认只读执行命令**：后台没人点审批，所以 DSH 的终端工具默认是只读沙箱；桌面操作走 ai-os 工具，不受影响。需要放宽时设置环境变量 `AI_OS_PERMISSION_MODE=workspace-write`。
+- **唤醒词可选**：在 `%LOCALAPPDATA%\ai-os\.env` 里设置 `WAKE_WORD=小爱` 并下载唤醒模型（见上文），就可以不按键直接喊。
+- DeepSeek Harness 开着时，快捷键自动交给后台助手；后台助手停止后，快捷键恢复为唤起 DSH 窗口。
+
+| 命令 | 作用 |
+| --- | --- |
+| `ai-os service status` | 查看状态（退出码 0 正常 / 1 未运行 / 2 部分异常 / 3 需要设置） |
+| `ai-os service stop` / `restart` | 停止 / 重启 |
+| `ai-os service disable` | 取消开机自启 |
+| `ai-os service logs` | 最新日志的路径 |
+
+后台助手崩溃时会自动重启；只有 `stop` 会让它停下。
+
 ## 实测效果
 
 同一台 Windows 11 电脑、同样的 6 个桌面任务（计算器输入、计算器切换模式、系统设置切换深色模式、浏览器填写表单、资源管理器新建文件夹、记事本写入并保存），在 DeepSeek Harness 中分别关闭和开启 `dsh-ai-os` 运行，模型均为 `deepseek-flash`：

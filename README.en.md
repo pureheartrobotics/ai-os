@@ -39,6 +39,23 @@ One run per task, measured 2026-11-16, with one exception: the first plugin-on r
 
 The success rate is the same on these tasks. The gain is speed, and it matters most for voice, where nobody wants to wait three minutes for an answer. In a real session, "list every open window" took **17 min 10 s and 27 steps** without the tools (the agent wrote `EnumWindows` PowerShell and hit an approval prompt on every step), and **3 s** with them.
 
+## Background mode: no DeepSeek Harness window needed
+
+```sh
+ai-os service start      # run the background assistant
+ai-os service enable     # optional: start it when you log into Windows
+```
+
+Then press **Ctrl+Alt+Space** in any app and speak; the DeepSeek Harness window doesn't need to be open. **Ctrl+Alt+Esc** stops at any point (listening, working or reading aloud) and returns to standby; Ctrl+Alt+Space while it reads interrupts and listens again. A status bar appears at the top of the screen only while it works, and you can follow up for a few seconds in the same conversation ("close it" knows what "it" is).
+
+- **Speech is recognized locally** with the SenseVoice model that DeepSeek Harness's Voice Input plugin downloads, so audio stays on your machine. Enable Voice Input in DSH once and finish its model setup.
+- **No extra API key.** Requests run through `dsh --profile headless` with the account you signed into in the desktop app. Your own DSH profiles are not modified.
+- **Shell commands are read-only by default**, since nobody is there to approve them. Desktop actions go through the ai-os tools and are unaffected. Set `AI_OS_PERMISSION_MODE=workspace-write` to loosen it.
+- **Optional wake word:** set `WAKE_WORD` in `%LOCALAPPDATA%\ai-os\.env` and download the wake model (`pip install "ai-os-desktop[wake]"`, then `python -m ai_os.wake`).
+- While DeepSeek Harness is open, the hotkey goes to the background assistant; when the assistant stops, the hotkey goes back to bringing up the DSH window.
+
+`ai-os service status` exits 0 (running), 1 (not running), 2 (running with a problem) or 3 (needs setup). The assistant restarts itself after a crash; only `ai-os service stop` stops it.
+
 ## Install from the DSH plugin market
 
 Under **Plugins**, enable the experimental **Custom plugin index** plugin, then **Discover → Add index source** and paste:

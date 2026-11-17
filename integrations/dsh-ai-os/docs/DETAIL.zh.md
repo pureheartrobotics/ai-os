@@ -29,6 +29,10 @@ dsh plugin add dsh-ai-os      # DeepSeek Harness 端
 
 打开 **插件 → AI OS** 可以看到运行检查和麦克风测试：测试会显示实时音量条和四秒录音的识别结果，用来区分“麦克风没声音”和“配置有问题”最快。
 
+## 不开窗口也能用
+
+执行 `ai-os service start`（加 `ai-os service enable` 可开机自启）。之后即使 DeepSeek Harness 没打开，在任何程序里按 Ctrl+Alt+Space 也能说话，按 Ctrl+Alt+Esc 随时停止：语音用「语音输入」的模型在本地识别，任务交给 DSH 的无界面模式、用你已登录的账号执行，结果自动朗读。
+
 ## 遇到问题
 
 | 现象 | 处理 |

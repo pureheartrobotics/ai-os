@@ -20,6 +20,7 @@ MAX_DETAIL = 36
 POLL_MS = 50
 
 GWL_EXSTYLE = -20
+SW_HIDE = 0
 SW_SHOWNOACTIVATE = 4
 WS_EX_TRANSPARENT = 0x20
 WS_EX_TOOLWINDOW = 0x80
@@ -37,7 +38,8 @@ class Overlay:
     Tk must own the main thread, so the voice loop runs in a worker via run().
     """
 
-    def __init__(self):
+    def __init__(self, hide_when_idle: bool = False):
+        self.hide_when_idle = hide_when_idle
         self._updates: queue.Queue[tuple[str, str] | None] = queue.Queue()
         user32 = ctypes.windll.user32
         previous = user32.GetForegroundWindow()
@@ -61,11 +63,12 @@ class Overlay:
         self._apply("idle", "")
 
         self.root.update_idletasks()
-        hwnd = user32.GetParent(self.root.winfo_id())
+        hwnd = self.hwnd = user32.GetParent(self.root.winfo_id())
         style = user32.GetWindowLongW(hwnd, GWL_EXSTYLE)
         user32.SetWindowLongW(
             hwnd, GWL_EXSTYLE, style | WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE)
-        user32.ShowWindow(hwnd, SW_SHOWNOACTIVATE)
+        if not hide_when_idle:
+            user32.ShowWindow(hwnd, SW_SHOWNOACTIVATE)
         # Tk activates its window while creating it; hand focus back to whatever the user was using.
         if previous and user32.GetForegroundWindow() == hwnd:
             user32.SetForegroundWindow(previous)
@@ -113,6 +116,8 @@ class Overlay:
         self.dot.itemconfigure(self.dot_id, fill=color)
         self.state_label.configure(text=label)
         self.detail_label.configure(text=detail)
+        if self.hide_when_idle and hasattr(self, "hwnd"):
+            ctypes.windll.user32.ShowWindow(self.hwnd, SW_HIDE if state == "idle" else SW_SHOWNOACTIVATE)
 
     def _on_callback_error(self, exc_type, exc, tb) -> None:
         if issubclass(exc_type, KeyboardInterrupt):

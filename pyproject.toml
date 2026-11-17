@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ai-os-desktop"
-version = "0.1.0"
+version = "0.2.0"
 description = "Voice-first Windows desktop control: a voice assistant and an MCP server for DeepSeek Harness and other agents"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -21,8 +21,10 @@ dependencies = [
     "pillow>=10.0",
     "httpx>=0.27",
     "mcp>=2.3",
+    "sherpa-onnx>=1.10",
+    "comtypes>=1.2",
 ]
-optional-dependencies = { wake = ["sherpa-onnx>=1.10", "pypinyin>=0.50"] }
+optional-dependencies = { wake = ["pypinyin>=0.50"] }
 keywords = ["deepseek", "dsh-plugin", "mcp", "voice", "computer-use", "windows", "uiautomation"]
 classifiers = ["Operating System :: Microsoft :: Windows"]
 

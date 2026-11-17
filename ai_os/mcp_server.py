@@ -70,7 +70,7 @@ def _text(text: str, error: bool = False) -> types.CallToolResult:
     return types.CallToolResult(content=[types.TextContent(type="text", text=text)], is_error=error)
 
 
-server = Server("ai-os", version="0.1.0", instructions=INSTRUCTIONS,
+server = Server("ai-os", version="0.2.0", instructions=INSTRUCTIONS,
                 on_list_tools=list_tools, on_call_tool=call_tool)
 
 

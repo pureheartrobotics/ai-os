@@ -29,6 +29,10 @@ Then enable the built-in **Voice Input** plugin under **Plugins** and complete i
 
 Open **Plugins → AI OS** to see the readiness checks and run a microphone test: it shows a live level meter and the transcription of a four-second sample, which is the quickest way to tell a quiet microphone from a setup problem.
 
+## Without the window
+
+Run `ai-os service start` (and `ai-os service enable` to start it at login). Ctrl+Alt+Space then works from any app even when DeepSeek Harness is closed, and Ctrl+Alt+Esc stops it at any point: speech is recognized locally with the Voice Input model, the task runs through DSH's headless mode with your signed-in account, and the answer is read aloud.
+
 ## Troubleshooting
 
 | Symptom | Fix |

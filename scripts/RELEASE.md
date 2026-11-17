@@ -4,8 +4,8 @@
 
 | 包 | 线上版本 | 地址 |
 | --- | --- | --- |
-| `ai-os-desktop` (PyPI) | 0.1.0 | https://pypi.org/project/ai-os-desktop/ |
-| `dsh-ai-os` (npm) | 0.3.3（latest） | https://www.npmjs.com/package/dsh-ai-os |
+| `ai-os-desktop` (PyPI) | 0.2.0 | https://pypi.org/project/ai-os-desktop/ |
+| `dsh-ai-os` (npm) | 0.3.4（latest） | https://www.npmjs.com/package/dsh-ai-os |
 
 插件市场索引（随 npm 包发布）：
 

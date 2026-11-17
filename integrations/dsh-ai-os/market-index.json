@@ -63,9 +63,9 @@
         "en": "Replace mouse and keyboard with your voice: press F8, speak, and DeepSeek operates Windows for you and answers aloud.",
         "zh": "用说话代替鼠标键盘：按 F8 说出指令，DeepSeek 替你操作 Windows，并语音回复。"
       },
-      "icon": "https://unpkg.com/dsh-ai-os@0.3.3/icon.svg",
+      "icon": "https://unpkg.com/dsh-ai-os@0.3.4/icon.svg",
       "author": "mr.z197009938",
-      "homepage": "https://www.npmjs.com/package/dsh-ai-os",
+      "homepage": "https://github.com/pureheartrobotics/ai-os",
       "metadata": {
         "category": "computer-use",
         "keywords": [
@@ -86,13 +86,13 @@
           "hands-free"
         ],
         "sortKeys": {
-          "published": 1794906146
+          "published": 1794916659
         }
       },
       "versions": [
         {
-          "version": "0.3.3",
-          "publishTimestamp": 1794906146,
+          "version": "0.3.4",
+          "publishTimestamp": 1794916659,
           "source": {
             "type": "npm",
             "registry": "https://registry.npmjs.org/"

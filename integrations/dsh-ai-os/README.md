@@ -44,6 +44,8 @@ The plugin adds a whale button to the composer. Press **F8** (or click it), spea
 
 **Ctrl+Alt+Space** works from any app: it brings DeepSeek Harness to the front and starts listening. Set `AI_OS_HOTKEY=off` to disable it.
 
+To use it without the DeepSeek Harness window at all, run `ai-os service start` (and `ai-os service enable` to start at login). The hotkey then goes to a background assistant that recognizes speech locally with the Voice Input model, runs the task through `dsh --profile headless` with your signed-in account, and reads the answer aloud.
+
 Speech recognition reuses dsh's built-in **Voice Input** plugin (experimental), so no extra API key is needed: enable it under **Plugins** and complete its model preparation once. If you picked a microphone there, AI OS uses the same one. Replies are read with the system voice.
 
 The plugin's page under **Plugins** checks that recognition is ready and has a microphone test (live level meter plus a sample transcription), which is the quickest way to tell a quiet microphone from a setup problem. Its 桌面操作 row reads the live MCP server status, so an unreachable Python side shows up as a red row with the actual error instead of a silent failure.

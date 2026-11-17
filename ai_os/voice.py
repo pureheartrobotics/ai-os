@@ -1,7 +1,9 @@
 import collections
 import io
+import os
 import queue
 import re
+import threading
 import time
 import wave
 import winsound
@@ -26,6 +28,8 @@ PRE_ROLL_MS = 300
 MIN_SPEECH_FRAMES = 3
 MIN_UTTERANCE_S = 0.4
 MAX_UTTERANCE_S = 20
+
+SVSF_ASYNC, SVSF_PURGE = 1, 2
 
 # Whisper-style models tend to emit these on silence or noise.
 HALLUCINATIONS = ("谢谢观看", "字幕", "点赞", "订阅", "明镜", "请不吝")
@@ -60,9 +64,25 @@ class Microphone:
             if spotter.accept(frame):
                 return
 
+    def wait_for_trigger(self, spotter: "WakeWordSpotter | None", pressed: threading.Event,
+                         stop: threading.Event) -> str | None:
+        """Blocks until the hotkey is pressed or the wake word heard: "hotkey", "wake", or None on stop."""
+        while not stop.is_set():
+            if pressed.is_set():
+                pressed.clear()
+                return "hotkey"
+            try:
+                frame = self._frames.get(timeout=0.1)
+            except queue.Empty:
+                continue
+            self._track_noise(_rms(frame))
+            if spotter and spotter.accept(frame):
+                return "wake"
+        return None
+
     def listen(self, on_speech: Callable[[], None] | None = None,
-               timeout_s: float | None = None) -> bytes | None:
-        """Returns one utterance, or None if it was too short or nobody spoke within timeout_s."""
+               timeout_s: float | None = None, cancel: threading.Event | None = None) -> bytes | None:
+        """Returns one utterance, or None if it was too short, nobody spoke within timeout_s, or cancel was set."""
         pre_roll = collections.deque(maxlen=PRE_ROLL_MS // FRAME_MS)
         voiced: list[np.ndarray] = []
         threshold = self._threshold()
@@ -72,6 +92,8 @@ class Microphone:
 
         while True:
             frame = self._frames.get()
+            if cancel is not None and cancel.is_set():
+                return None
             rms = _rms(frame)
 
             if not voiced:
@@ -142,6 +164,43 @@ class SpeechToText:
         return text
 
 
+def sensevoice_dir() -> str | None:
+    """The SenseVoice model DeepSeek Harness downloads for its Voice Input plugin, if present."""
+    candidates = [os.environ.get("SENSEVOICE_MODEL_DIR", "")]
+    dsh_home = os.environ.get("DSH_HOME") or os.path.join(os.path.expanduser("~"), ".dsh")
+    candidates.append(os.path.join(dsh_home, "speech-to-text", "sensevoice", "models", "sensevoice-onnx"))
+    for path in candidates:
+        if path and os.path.exists(os.path.join(path, "model.int8.onnx")):
+            return path
+    return None
+
+
+class LocalSpeechToText:
+    """Offline recognition with SenseVoice through sherpa-onnx; audio never leaves the machine."""
+
+    def __init__(self, model_dir: str):
+        import sherpa_onnx
+
+        self.recognizer = sherpa_onnx.OfflineRecognizer.from_sense_voice(
+            model=os.path.join(model_dir, "model.int8.onnx"),
+            tokens=os.path.join(model_dir, "tokens.txt"),
+            language="auto",
+            use_itn=True,
+            num_threads=2,
+        )
+
+    def transcribe(self, wav: bytes) -> str:
+        with wave.open(io.BytesIO(wav)) as w:
+            rate = w.getframerate()
+            samples = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16)
+        stream = self.recognizer.create_stream()
+        stream.accept_waveform(rate, samples.astype(np.float32) / 32768)
+        self.recognizer.decode_stream(stream)
+        text = stream.result.text.strip()
+        # Noise decodes to a lone filler or punctuation.
+        return text if len(_PUNCT.sub("", text)) >= 2 else ""
+
+
 class Speaker:
     """DeepSeek TTS by default; falls back to the offline Windows voice if the request fails."""
 
@@ -166,6 +225,59 @@ class Speaker:
         engine = self._local_engine()
         engine.say(text)
         engine.runAndWait()
+
+    def say_until(self, text: str, cancel: threading.Event) -> bool:
+        """Like say(), but stops as soon as cancel is set; returns False if it was interrupted."""
+        if not text:
+            return True
+        print(f"[AI] {text}", flush=True)
+        self.status("speaking", text)
+        if self.deepseek:
+            try:
+                audio = self.deepseek.synthesize(text)
+            except Exception as e:
+                print(f"[TTS] DeepSeek 语音合成失败，改用本地语音：{e}")
+            else:
+                return self._play_until(audio, cancel)
+        return self._sapi_until(text, cancel)
+
+    @staticmethod
+    def _play_until(audio: bytes, cancel: threading.Event) -> bool:
+        # PlaySound can't play memory asynchronously, so go through a file.
+        path = os.path.join(os.environ.get("TEMP", "."), "ai-os-reply.wav")
+        with open(path, "wb") as f:
+            f.write(audio)
+        with wave.open(io.BytesIO(audio)) as w:
+            duration = w.getnframes() / w.getframerate()
+        winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+        if cancel.wait(duration + 0.2):
+            winsound.PlaySound(None, 0)
+            return False
+        return True
+
+    def _sapi_until(self, text: str, cancel: threading.Event) -> bool:
+        voice = self._sapi_voice()
+        voice.Speak(text, SVSF_ASYNC)
+        while not voice.WaitUntilDone(100):
+            if cancel.is_set():
+                voice.Speak("", SVSF_ASYNC | SVSF_PURGE)
+                return False
+        return True
+
+    def _sapi_voice(self):
+        if getattr(self, "_sapi", None) is None:
+            import comtypes.client
+
+            self._sapi = comtypes.client.CreateObject("SAPI.SpVoice")
+            # pyttsx3 counts words per minute around 200; SAPI rates run from -10 to 10 around 0.
+            self._sapi.Rate = max(-10, min(10, round((self.rate - 200) / 20)))
+            voices = self._sapi.GetVoices()
+            for i in range(voices.Count):
+                ident = voices.Item(i).GetDescription().lower()
+                if "chinese" in ident or "huihui" in ident or "中文" in ident:
+                    self._sapi.Voice = voices.Item(i)
+                    break
+        return self._sapi
 
     def _local_engine(self):
         if self._engine is None:
