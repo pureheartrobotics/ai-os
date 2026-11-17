@@ -1,0 +1,107 @@
+{
+  "format": 1,
+  "title": {
+    "en": "AI OS plugins",
+    "zh": "AI OS 插件"
+  },
+  "description": {
+    "en": "Voice control for the Windows desktop, published as DSH bundles.",
+    "zh": "Windows 桌面语音操作，以 DSH 插件形式发布。"
+  },
+  "metadata": {
+    "categories": {
+      "computer-use": {
+        "title": {
+          "en": "Computer use",
+          "zh": "电脑操作"
+        }
+      },
+      "voice": {
+        "title": {
+          "en": "Voice",
+          "zh": "语音"
+        }
+      }
+    },
+    "labels": {
+      "windows": {
+        "title": {
+          "en": "Windows"
+        }
+      },
+      "mcp": {
+        "title": {
+          "en": "MCP tools",
+          "zh": "MCP 工具"
+        }
+      },
+      "hands-free": {
+        "title": {
+          "en": "Hands-free",
+          "zh": "免手操作"
+        }
+      }
+    },
+    "sortKeys": {
+      "published": {
+        "title": {
+          "en": "Published",
+          "zh": "发布时间"
+        },
+        "order": "desc"
+      }
+    }
+  },
+  "plugins": [
+    {
+      "name": "dsh-ai-os",
+      "title": {
+        "en": "AI OS · Voice Desktop Control",
+        "zh": "AI OS · 语音操作电脑"
+      },
+      "description": {
+        "en": "Replace mouse and keyboard with your voice: press F8, speak, and DeepSeek operates Windows for you and answers aloud.",
+        "zh": "用说话代替鼠标键盘：按 F8 说出指令，DeepSeek 替你操作 Windows，并语音回复。"
+      },
+      "icon": "https://unpkg.com/dsh-ai-os@0.3.3/icon.svg",
+      "author": "mr.z197009938",
+      "homepage": "https://www.npmjs.com/package/dsh-ai-os",
+      "metadata": {
+        "category": "computer-use",
+        "keywords": [
+          "dsh",
+          "dsh-plugin",
+          "deepseek-harness",
+          "deepseek",
+          "cordis",
+          "mcp",
+          "computer-use",
+          "windows",
+          "voice",
+          "voice-control"
+        ],
+        "labels": [
+          "windows",
+          "mcp",
+          "hands-free"
+        ],
+        "sortKeys": {
+          "published": 1794906146
+        }
+      },
+      "versions": [
+        {
+          "version": "0.3.3",
+          "publishTimestamp": 1794906146,
+          "source": {
+            "type": "npm",
+            "registry": "https://registry.npmjs.org/"
+          },
+          "engines": {
+            "dsh": ">=0.2.2-0"
+          }
+        }
+      ]
+    }
+  ]
+}

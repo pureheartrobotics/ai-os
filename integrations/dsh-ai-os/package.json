@@ -1,0 +1,42 @@
+{
+  "name": "dsh-ai-os",
+  "version": "0.3.3",
+  "description": "AI OS for DeepSeek Harness: replace mouse and keyboard with your voice. Press F8, speak, and the agent operates the Windows desktop through UI Automation and answers aloud.",
+  "type": "module",
+  "main": "lib/index.js",
+  "icon": "./icon.svg",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./locale/*.json": "./locale/*.json"
+  },
+  "files": ["lib", "cordis.patch.yml", "icon.svg", "locale/*.json", "docs", "market-index.json", "README.md", "LICENSE"],
+  "keywords": ["dsh", "dsh-plugin", "deepseek-harness", "deepseek", "cordis", "mcp", "computer-use", "windows", "voice", "voice-control"],
+  "author": "mr.z197009938",
+  "homepage": "https://github.com/pureheartrobotics/ai-os#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pureheartrobotics/ai-os.git",
+    "directory": "integrations/dsh-ai-os"
+  },
+  "bugs": "https://github.com/pureheartrobotics/ai-os/issues",
+  "license": "MIT",
+  "os": ["win32"],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-api-remotes",
+        "@deepseek-ai/dsh-api-session-controller",
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-primitives",
+        "@deepseek-ai/dsh-client-ui-plugin-manager"
+      ]
+    }
+  }
+}

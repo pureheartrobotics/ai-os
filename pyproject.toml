@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-os-desktop"
+version = "0.1.0"
+description = "Voice-first Windows desktop control: a voice assistant and an MCP server for DeepSeek Harness and other agents"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+dependencies = [
+    "openai>=1.40",
+    "python-dotenv>=1.0",
+    "numpy>=1.26",
+    "sounddevice>=0.4.6",
+    "pyautogui>=0.9.54",
+    "pyperclip>=1.8",
+    "uiautomation>=2.0.18",
+    "pyttsx3>=2.90",
+    "pillow>=10.0",
+    "httpx>=0.27",
+    "mcp>=2.3",
+]
+optional-dependencies = { wake = ["sherpa-onnx>=1.10", "pypinyin>=0.50"] }
+keywords = ["deepseek", "dsh-plugin", "mcp", "voice", "computer-use", "windows", "uiautomation"]
+classifiers = ["Operating System :: Microsoft :: Windows"]
+
+[project.urls]
+Homepage = "https://github.com/pureheartrobotics/ai-os"
+Repository = "https://github.com/pureheartrobotics/ai-os"
+Issues = "https://github.com/pureheartrobotics/ai-os/issues"
+
+[project.scripts]
+ai-os = "ai_os.cli:voice"
+ai-os-mcp = "ai_os.cli:mcp"
+
+[tool.setuptools]
+packages = ["ai_os"]

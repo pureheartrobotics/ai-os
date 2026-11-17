@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "AI OS · 语音操作电脑",
+    "description": "用说话代替鼠标键盘：按 F8 说出指令，DeepSeek 替你操作 Windows，并语音回复。",
+    "detail": "docs/DETAIL.zh.md"
+  }
+}

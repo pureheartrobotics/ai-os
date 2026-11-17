@@ -1,0 +1,11 @@
+# Requires the Python side on PATH: pip install ai-os-desktop
+# The voice conversation row needs dsh's built-in Voice Input plugin enabled for speech recognition.
+- insert:
+    - id: mcp-ai-os
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: ai-os
+        transport: stdio
+        command: ai-os-mcp
+    - id: ai-os-voice
+      name: dsh-ai-os
