@@ -137,6 +137,10 @@ ai-os service enable     # 可选：登录 Windows 后自动启动
 - 鼠标移到屏幕左上角立即中止当前操作。
 - MCP 模式下不提供命令执行工具，交给宿主自己的审批流程。
 
+## Android 版（预览）
+
+手机上点悬浮球说话，通过无障碍服务操作应用，同样按控件编号点击、只回传变化。安装和开发说明见 [`android/README.md`](android/README.md)。
+
 ## 开发
 
 ```sh
