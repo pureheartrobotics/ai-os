@@ -90,7 +90,7 @@ class ScreenReader(private val service: AccessibilityService) {
         if (rect.width() <= 0 || rect.height() <= 0) return
 
         val kind = kindOf(node)
-        var name = clean(node.text).ifEmpty { clean(node.contentDescription) }
+        var name = if (node.isPassword) "" else clean(node.text).ifEmpty { clean(node.contentDescription) }
         if (name.isEmpty() && kind == "Edit") name = clean(node.hintText)
         var consumesChildren = false
         val clickable = node.isClickable || node.isLongClickable
@@ -141,7 +141,7 @@ class ScreenReader(private val service: AccessibilityService) {
         if (!node.isEnabled) flags += "不可用"
         if (node.isScrollable) flags += "可滚动"
         if (node.isEditable && node.isFocused) flags += "输入焦点"
-        if (node.isPassword) flags += "密码"
+        if (node.isPassword) flags += if (node.text.isNullOrEmpty()) "密码" else "密码，已填写"
         return flags
     }
 
@@ -178,7 +178,7 @@ class ScreenReader(private val service: AccessibilityService) {
     }
 
     companion object {
-        const val UNAVAILABLE = "（无法读取当前界面，请确认 AI OS 的无障碍服务已开启）"
+        const val UNAVAILABLE = "（无法读取当前界面：屏幕可能已熄灭或锁定，或 AI OS 的无障碍服务未开启）"
         private const val MAX_DEPTH = 40
         private const val MAX_NODES = 400
         private const val MAX_NAME = 40

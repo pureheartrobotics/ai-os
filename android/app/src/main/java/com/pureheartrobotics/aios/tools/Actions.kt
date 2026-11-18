@@ -106,7 +106,7 @@ class Actions(
         }
         if (!ok) ok = paste(node, text)
         if (!ok) return "错误：无法在该输入框输入文字。"
-        var result = "已输入：${text.take(50)}"
+        var result = if (node.isPassword) "已在密码框输入 ${text.length} 个字符" else "已输入：${text.take(50)}"
         if (pressEnter) result += if (imeEnter(node)) "，并按下回车" else "（此输入框不支持模拟回车，请点击发送或搜索按钮）"
         return result
     }

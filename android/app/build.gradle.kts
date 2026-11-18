@@ -12,13 +12,27 @@ android {
         applicationId = "com.pureheartrobotics.aios"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.1.1"
+    }
+
+    // The keystore and its passwords live in ~/.gradle/gradle.properties, never in the repo.
+    val releaseStore = providers.gradleProperty("AIOS_RELEASE_STORE_FILE").orNull
+    signingConfigs {
+        if (releaseStore != null) {
+            create("release") {
+                storeFile = file(releaseStore)
+                storePassword = providers.gradleProperty("AIOS_RELEASE_STORE_PASSWORD").get()
+                keyAlias = providers.gradleProperty("AIOS_RELEASE_KEY_ALIAS").get()
+                keyPassword = providers.gradleProperty("AIOS_RELEASE_KEY_PASSWORD").get()
+            }
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.findByName("release")
         }
     }
 
